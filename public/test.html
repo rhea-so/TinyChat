@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatting</title>
+
+    <style>
+        .chat_log {
+            width: 95%;
+            height: 200px;
+        }
+
+        .name {
+            width: 10%;
+        }
+
+        .message {
+            width: 70%;
+        }
+
+        .chat {
+            width: 10%;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <textarea id="chatLog" class="chat_log" readonly></textarea>
+    </div>
+    <form id="chat">
+        <input id="name" class="name" type="text" value="guest">
+        <input id="message" class="message" type="text">
+        <input type="submit" class="chat" value="chat" />
+    </form>
+    <div id="box" class="box">
+</body>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    let socket = io();
+    $('#chat').on('submit', (e) => {
+        socket.emit('chat', {
+            nickname: $('#name').val(),
+            message: $('#message').val()
+        });
+        $('#message').val("");
+        $("#message").focus();
+        e.preventDefault();
+    });
+    socket.on('chat', (data) => {
+        $('#chatLog').append('[' + data.nickname + '] ' + data.message + '\n');
+        $('#chatLog').scrollTop($('#chatLog')[0].scrollHeight);
+    });
+</script>
+
+</html>

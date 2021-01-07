@@ -6,7 +6,7 @@ import fs from 'fs';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 
-class Runtime { 
+class Runtime {
 	private static commandOptions: any;
 	private static server;
 	private static express;
@@ -22,10 +22,10 @@ class Runtime {
 			Runtime.createExpress();
 			Runtime.createHTTPServer();
 			Runtime.createSocketIO();
-		} catch(err) {
+		} catch (err) {
 			Runtime.kill(err.message);
 		}
- 	}
+	}
 
 	private static loadCommandOptions(): void {
 		const commandLineArgs = require('command-line-args');
@@ -77,13 +77,13 @@ class Runtime {
 	private static createSocketIO(): void {
 		Runtime.socketIO = SocketIO(Runtime.server);
 		Runtime.socketIOEvents = {
-			connect: async () => {},
-			disconnect: async () => {},
+			connect: async () => { },
+			disconnect: async () => { },
 			events: {}
 		};
 		Runtime.socketIO.on('connection', (socket) => {
 			Runtime.socketIOEvents.connect(socket);
-			
+
 			for (let eventName in Runtime.socketIOEvents.events) {
 				socket.on(eventName, (data) => {
 					Runtime.socketIOEvents.events[eventName](socket, data);
@@ -95,7 +95,7 @@ class Runtime {
 			});
 		});
 		console.log('[SocketIO] created');
-	} 
+	}
 
 	public static async open(): Promise<void> {
 		return new Promise((resolve, _reject) => {
@@ -104,9 +104,9 @@ class Runtime {
 				console.log('');
 				resolve();
 			});
-	 	});
-	} 
-	
+		});
+	}
+
 	/** Express Feature */
 	public static get(address: string, func: (req: Express.Request, res: Express.Response) => Promise<void>): void {
 		Runtime.express.get(address, func);
@@ -118,6 +118,14 @@ class Runtime {
 
 	public static addMiddleware(middleware: any): void {
 		Runtime.express.use(middleware);
+	}
+
+	public static set(...arg: any[]): void {
+		Runtime.express.set(...arg);
+	}
+
+	public static engine(...arg: any[]): void {
+		Runtime.express.engine(...arg);
 	}
 
 	public static createRouter(): Express.Router {

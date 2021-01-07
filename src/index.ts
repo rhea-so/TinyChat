@@ -6,22 +6,26 @@ import { Debug, LogTag } from '00_Utils/debugger';
 Debug.log(LogTag.NOWAY, 'Hello, World!');
 
 import Runtime from './runtime';
+import path from 'path';
+import express from 'express';
 
 async function main() {
 	let sockets: any[] = [];
 
 	await Runtime.boot();
 
-	await Runtime.get('/', async (req, res) => {
+	Runtime.get('/', async (_req, res) => {
 		res.json({ message: 'success' });
 	});
 
-	await Runtime.connect(async (socket) => {
+	Runtime.addMiddleware(express.static(path.join(__dirname, '..', '/public')));
+
+	Runtime.connect(async (socket) => {
 		Debug.log(socket.id, 'connected');
 		sockets.push(socket);
 	});
 
-	await Runtime.disconnect(async (socket) => {
+	Runtime.disconnect(async (socket) => {
 		Debug.log(socket.id, 'disconnected');
 		const index = sockets.indexOf(socket.id);
 		if (index !== -1) {
@@ -30,10 +34,11 @@ async function main() {
 		}
 	});
 
-	await Runtime.receive('chat', async (_socket, data) => {
+	Runtime.receive('chat', async (_socket, data) => {
 		for (const socket of sockets) {
 			socket?.emit('chat', {
-				text: data.text,
+				nickname: data.nickname,
+				message: data.message,
 				version: 1
 			});
 		}
