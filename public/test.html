@@ -41,12 +41,24 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+<script type="text/javascript" src="http://jsgetip.appspot.com"></script>
+
 <script>
-    let socket = io();
+    let socket = io('http://193.123.239.29:31512');
+    socket.emit('chat', {
+        nickname: 'system',
+        message: ip() + ' 위치에서 새로운 유저가 접속하였습니다' + '  (' + new Date().toString() + ')'
+    });
+
+    socket.on('reconnect', function () {
+        $('#chatLog').append('재접속 시도 중 ...\n');
+        $('#chatLog').scrollTop($('#chatLog')[0].scrollHeight);
+    });
+
     $('#chat').on('submit', (e) => {
         socket.emit('chat', {
             nickname: $('#name').val(),
-            message: $('#message').val()
+            message: $('#message').val() + '  (' + new Date().toString() + ')'
         });
         $('#message').val("");
         $("#message").focus();
