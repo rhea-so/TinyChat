@@ -9,7 +9,7 @@ import morgan from 'morgan';
 class Runtime {
 	private static commandOptions: any;
 	private static server;
-	private static express;
+	private static express: Express.Express;
 	private static socketIO;
 	private static socketIOEvents: { connect: (socket: SocketIO.Socket) => Promise<void>, disconnect: (socket: SocketIO.Socket) => Promise<void>, events: any };
 
@@ -116,16 +116,8 @@ class Runtime {
 		Runtime.express.post(address, func);
 	}
 
-	public static addMiddleware(middleware: any): void {
+	public static addMiddleware(middleware: Express.RequestHandler): void {
 		Runtime.express.use(middleware);
-	}
-
-	public static set(...arg: any[]): void {
-		Runtime.express.set(...arg);
-	}
-
-	public static engine(...arg: any[]): void {
-		Runtime.express.engine(...arg);
 	}
 
 	public static createRouter(): Express.Router {

@@ -9,12 +9,27 @@ import Runtime from './runtime';
 import path from 'path';
 import express from 'express';
 
+let serviceDown: boolean = false;
+
 async function main() {
 	let sockets: any[] = [];
 
 	await Runtime.boot();
 
+	Runtime.addMiddleware((_req, res, next) => {
+		res.setHeader('Connection', 'close');
+		next();
+	})
+
 	Runtime.get('/', async (_req, res) => {
+		res.json({ message: 'success' });
+	});
+
+	Runtime.get('/health', async (_req, res) => {
+		if (serviceDown === true) {
+			res.status(500).end();
+			return;
+		}
 		res.json({ message: 'success' });
 	});
 
@@ -48,3 +63,13 @@ async function main() {
 }
 
 main().then().catch(err => Debug.log(LogTag.ERROR, err));
+
+function startGracefulShutdown() {
+	serviceDown = true;
+	setTimeout(() => {
+		process.exit(0);
+	}, 1000 * 5);
+}
+
+process.on('SIGTERM', startGracefulShutdown);
+process.on('SIGINT', startGracefulShutdown);
