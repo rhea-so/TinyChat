@@ -44,7 +44,7 @@
 <script type="text/javascript" src="http://jsgetip.appspot.com"></script>
 
 <script>
-    let socket = io('http://193.123.239.29:31512');
+    let socket = io('https://test.rhea-so.com');
     socket.emit('chat', {
         nickname: 'system',
         message: ip() + ' 위치에서 새로운 유저가 접속하였습니다' + '  (' + new Date().toString() + ')'
