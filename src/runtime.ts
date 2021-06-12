@@ -75,7 +75,7 @@ class Runtime {
 	}
 
 	private static createSocketIO(): void {
-		Runtime.socketIO = SocketIO(Runtime.server);
+		Runtime.socketIO = SocketIO.listen(Runtime.server, { perMessageDeflate: false, pingInterval: 25000, pingTimeout: 60000 });
 		Runtime.socketIOEvents = {
 			connect: async () => { },
 			disconnect: async () => { },
