@@ -1,10 +1,6 @@
 require('app-module-path').addPath(__dirname);
 require('source-map-support').install();
 
-import { Debug, LogTag } from '00_Utils/debugger';
-
-Debug.log(LogTag.NOWAY, 'Hello, World!');
-
 import Runtime from './runtime';
 import path from 'path';
 import express from 'express';
@@ -21,9 +17,7 @@ async function main() {
 		next();
 	})
 
-	Runtime.get('/', async (_req, res) => {
-		res.json({ message: 'success' });
-	});
+	import('./01_Routers/01_HealthCheck/HealthCheckRouter');
 
 	Runtime.get('/health', async (_req, res) => {
 		if (serviceDown === true) {
@@ -36,12 +30,12 @@ async function main() {
 	Runtime.addMiddleware(express.static(path.join(__dirname, '..', '/public')));
 
 	Runtime.connect(async (socket) => {
-		Debug.log(socket.id, 'connected');
+		console.log(socket.id, 'connected');
 		sockets.push(socket);
 	});
 
 	Runtime.disconnect(async (socket) => {
-		Debug.log(socket.id, 'disconnected');
+		console.log(socket.id, 'disconnected');
 		const index = sockets.indexOf(socket.id);
 		if (index !== -1) {
 			sockets[index] = null;
@@ -62,7 +56,7 @@ async function main() {
 	await Runtime.open();
 }
 
-main().then().catch(err => Debug.log(LogTag.ERROR, err));
+main().then().catch(err => console.log(err));
 
 function startGracefulShutdown() {
 	serviceDown = true;

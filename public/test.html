@@ -43,7 +43,7 @@
 <script src="//code.jquery.com/jquery-1.11.1.js"></script>
 
 <script>
-    let socket = io('https://test.rhea-so.com');
+    let socket = io('/');
     socket.emit('chat', {
         nickname: 'system',
         message: '새로운 유저가 접속하였습니다' + '  (' + new Date().toString() + ')'
